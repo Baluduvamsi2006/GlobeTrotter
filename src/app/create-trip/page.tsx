@@ -123,14 +123,14 @@ export default function CreateTrip() {
               <div className={styles.cardTitle}>Montmartre</div>
             </div>
           </div>
-          <div className={styles.card} style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1522093095166-b8ca16bce358?auto=format&fit=crop&w=400&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className={styles.card} style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=400&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={styles.cardOverlay}>
-              <div className={styles.cardTitle}>Palace of Versailles</div>
+              <div className={styles.cardTitle}>Lisbon, Portugal</div>
             </div>
           </div>
-          <div className={styles.card} style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1500313830540-7b665030e2f1?auto=format&fit=crop&w=400&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className={styles.card} style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=400&q=80)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={styles.cardOverlay}>
-              <div className={styles.cardTitle}>Notre Dame</div>
+              <div className={styles.cardTitle}>Kyoto, Japan</div>
             </div>
           </div>
         </div>
