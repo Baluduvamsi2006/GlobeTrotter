@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import styles from './explore.module.css';
+import styles from './activities.module.css';
 
 export default function SearchToolbar() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function SearchToolbar() {
     if (t) params.set('type', t);
     if (s !== 'asc') params.set('sort', s); // 'asc' is default, omit to keep URL clean
 
-    router.push(`/explore?${params.toString()}`);
+    router.push(`/activities?${params.toString()}`);
   };
 
   return (

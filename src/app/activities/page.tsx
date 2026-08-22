@@ -3,10 +3,10 @@ import Nav from '../../components/Nav';
 import Footer from '../../components/Footer';
 import SearchToolbar from './SearchToolbar';
 import ResultCard from './ResultCard';
-import styles from './explore.module.css';
+import styles from './activities.module.css';
 import { prisma } from '../../lib/prisma';
 
-export default async function ExplorePage({
+export default async function ActivitiesPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -52,7 +52,7 @@ export default async function ExplorePage({
         <SearchToolbar />
 
         <h2 className={styles.resultsHeader}>
-          {query ? `Results for "${query}"` : typeFilter ? `${typeFilter}s` : "Popular destinations and activities"}
+          {query ? `Results for "${query}"` : typeFilter === 'Activity' ? 'Activities' : typeFilter ? `${typeFilter}s` : "Popular destinations and activities"}
         </h2>
         
         <div className={styles.resultsGrid}>

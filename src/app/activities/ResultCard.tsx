@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './explore.module.css';
+import styles from './activities.module.css';
 
 interface ResultCardProps {
   id: string;
@@ -15,7 +15,7 @@ export default function ResultCard({ id, title, subtitle, description, photoUrl,
   const bgImage = photoUrl || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80';
 
   return (
-    <a href={`/explore/${id}`} className={styles.resultCard}>
+    <a href={`/activities/${id}`} className={styles.resultCard}>
       <div 
         className={styles.cardImage} 
         style={{ backgroundImage: `url(${bgImage})` }} 
