@@ -36,6 +36,29 @@ export default function CreateTrip() {
           <button type="button" className={styles.saveButton}>Save Trip</button>
         </form>
 
+      <section className={styles.suggestionsSection}>
+          <h2 className={styles.suggestionsTitle}>Suggestions for Places to Visit / Activities to perform</h2>
+          <div className={styles.grid}>
+            <div className={styles.card}>
+              <div className={styles.cardTitle}>Eiffel Tower, Paris</div>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle}>Louvre Museum</div>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle}>Seine River Cruise</div>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle}>Montmartre Walking Tour</div>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle}>Palace of Versailles</div>
+            </div>
+            <div className={styles.card}>
+              <div className={styles.cardTitle}>Notre Dame Cathedral</div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
