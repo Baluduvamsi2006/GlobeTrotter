@@ -2,9 +2,7 @@ import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import Link from 'next/link';
 import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Forgot Password | GlobeTrotter',
-};
+export const metadata: Metadata = { title: 'Forgot Password | GlobeTrotter' };
 
 export default function ForgotPasswordPage() {
   return (
@@ -20,11 +18,11 @@ export default function ForgotPasswordPage() {
       </div>
       <div className="auth-form-panel">
         <div className="auth-card">
-          <h1>Reset Password</h1>
-          <p className="auth-subtitle">Enter your email to retrieve your security question.</p>
+          <h1>Forgot Password?</h1>
+          <p className="auth-subtitle">Enter your email and we'll send you a reset link.</p>
           <ForgotPasswordForm />
           <p className="auth-switch">
-            Remember your password? <Link href="/login">Sign in</Link>
+            <Link href="/login">← Back to Sign In</Link>
           </p>
         </div>
       </div>

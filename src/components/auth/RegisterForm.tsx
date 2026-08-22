@@ -22,6 +22,7 @@ export default function RegisterForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -212,7 +213,7 @@ export default function RegisterForm() {
         <span>Confirm Password <span className="req">*</span></span>
         <div className="password-wrapper">
           <input
-            type={showPassword ? 'text' : 'password'}
+            type={showConfirmPassword ? 'text' : 'password'}
             name="confirmPassword"
             required
             placeholder="••••••••"
@@ -221,7 +222,16 @@ export default function RegisterForm() {
             style={{ borderColor: passwordMismatch ? 'var(--color-alert)' : passwordMatch ? 'var(--color-success)' : undefined }}
             autoComplete="new-password"
           />
+          <button
+            type="button"
+            className="password-toggle"
+            style={{ right: passwordMatch || passwordMismatch ? 36 : 12 }}
+            onClick={() => setShowConfirmPassword((v) => !v)}
+          >
+            {showConfirmPassword ? '🙈' : '👁'}
+          </button>
           {passwordMatch && <span className="input-status-icon" style={{ right: 12, position: 'absolute' }}>✅</span>}
+          {passwordMismatch && <span className="input-status-icon" style={{ right: 12, position: 'absolute' }}>❌</span>}
         </div>
         {passwordMismatch && <span className="field-hint error">Passwords don't match</span>}
       </label>

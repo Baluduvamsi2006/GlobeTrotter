@@ -630,12 +630,13 @@ button {
 
 .auth-card {
   width: 100%;
-  max-width: 440px;
+  max-width: 560px;
   background: var(--color-surface);
-  padding: 48px;
+  padding: 40px 44px;
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(30, 41, 59, 0.05);
   border: 1px solid var(--color-border);
+  overflow: hidden;
 }
 
 .auth-card h1 {
@@ -657,12 +658,14 @@ button {
 }
 
 .auth-row {
-  display: flex;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: 100%;
 }
 
 .auth-row .auth-field {
-  flex: 1;
+  min-width: 0;
 }
 
 .auth-field {
@@ -678,8 +681,10 @@ button {
 }
 
 .auth-field input {
-  height: 48px;
-  padding: 0 16px;
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-bg-app);
@@ -687,6 +692,7 @@ button {
   font: inherit;
   font-size: 14px;
   transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
 }
 
 .auth-field input:focus {
