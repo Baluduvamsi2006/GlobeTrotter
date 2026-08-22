@@ -1,18 +1,17 @@
 'use server';
 
-import { PrismaClient } from '@prisma/client';
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { prisma } from '../../lib/prisma';
+import { auth } from '../../auth';
 import { revalidatePath } from 'next/cache';
 import fs from 'fs/promises';
 import path from 'path';
 
-const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
-
 export async function createTrip(prevState: any, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { error: 'You must be logged in to create a trip.' };
+  }
+
   const name = formData.get('name') as string;
   const place = formData.get('place') as string; // Will ignore for now, could save to description
   const start_date = formData.get('startDate') as string;
@@ -43,23 +42,10 @@ export async function createTrip(prevState: any, formData: FormData) {
       coverPhotoUrl = `/uploads/${filename}`;
     }
 
-    // 2. Create a dummy user since we don't have authentication yet
-    let user = await prisma.user.findFirst();
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          firstName: 'Demo',
-          lastName: 'User',
-          email: 'demo@globetrotter.com',
-          passwordHash: 'dummyhash',
-        },
-      });
-    }
-
-    // 3. Create the trip using Prisma with the new coverPhotoUrl
+    // 2. Create the trip using Prisma and the Authenticated User's ID
     await prisma.trip.create({
       data: {
-        userId: user.id,
+        userId: session.user.id,
         title: name,
         startDate: new Date(start_date),
         endDate: new Date(end_date),
