@@ -580,3 +580,151 @@ button {
     gap: 15px;
   }
 }
+
+/* Authentication Styles */
+
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-bg-app);
+}
+
+.auth-image-panel {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .auth-image-panel {
+    display: block;
+    flex: 1;
+    background: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80') center / cover;
+    position: relative;
+  }
+}
+
+.auth-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.8) 0%, rgba(15, 53, 81, 0.9) 100%);
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-image-overlay h2 {
+  color: white;
+  font-size: 48px;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  max-width: 400px;
+}
+
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--color-surface);
+  padding: 48px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(30, 41, 59, 0.05);
+  border: 1px solid var(--color-border);
+}
+
+.auth-card h1 {
+  margin: 0;
+  font-size: 32px;
+  letter-spacing: -1px;
+}
+
+.auth-subtitle {
+  color: var(--color-muted);
+  margin: 8px 0 32px;
+  font-size: 15px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.auth-row {
+  display: flex;
+  gap: 16px;
+}
+
+.auth-row .auth-field {
+  flex: 1;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-field span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.auth-field input {
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg-app);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-field input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.auth-submit {
+  margin-top: 12px;
+  height: 48px;
+  justify-content: center;
+  font-size: 15px;
+  width: 100%;
+}
+
+.auth-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-alert);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.auth-switch {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.auth-switch a {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
