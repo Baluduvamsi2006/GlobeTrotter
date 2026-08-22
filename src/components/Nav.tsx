@@ -1,13 +1,14 @@
-import { auth, signOut } from '@/auth';
+import { auth } from '@/auth';
+import Link from 'next/link';
 
 export default async function Nav() {
     const session = await auth();
     const initials = session?.user?.name
-      ?.split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2) || 'U';
+        ?.split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .substring(0, 2) || 'U';
 
     return (
         <header className="site-nav">
@@ -23,16 +24,11 @@ export default async function Nav() {
                 <a className="nav-link" href="/activities">Activities</a>
             </nav>
             {session?.user ? (
-                <form action={async () => {
-                    'use server';
-                    await signOut();
-                }} style={{ marginLeft: 'auto' }}>
-                    <button className="profile-button" type="submit" aria-label="Sign out" title="Sign Out">
-                        <span className="profile-avatar" aria-hidden="true">{initials}</span>
-                        <span className="profile-name">{session.user.name}</span>
-                        <span className="chevron" aria-hidden="true">⏏</span>
-                    </button>
-                </form>
+                <Link className="profile-button" href="/profile" aria-label="Open profile">
+                    <span className="profile-avatar" aria-hidden="true">{initials}</span>
+                    <span className="profile-name">{session.user.name}</span>
+                    <span className="chevron" aria-hidden="true">›</span>
+                </Link>
             ) : (
                 <a href="/login" className="primary-button" style={{ marginLeft: 'auto' }}>Sign In</a>
             )}
