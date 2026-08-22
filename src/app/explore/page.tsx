@@ -12,32 +12,37 @@ export default async function ExplorePage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const resolvedParams = await searchParams;
+  
   const rawQuery = resolvedParams.q;
   const query = typeof rawQuery === 'string' ? rawQuery : '';
+  
+  const rawType = resolvedParams.type;
+  const typeFilter = typeof rawType === 'string' ? rawType : undefined;
+
+  const rawSort = resolvedParams.sort;
+  const sortOrder = rawSort === 'desc' ? 'desc' : 'asc';
 
   let results: any[] = [];
   
+  const whereClause: any = {};
+  
   if (query) {
-    // Search the Place table for anything matching name, city, country, or placeType
-    results = await prisma.place.findMany({
-      where: {
-        OR: [
-          { name: { contains: query, mode: 'insensitive' } },
-          { city: { contains: query, mode: 'insensitive' } },
-          { country: { contains: query, mode: 'insensitive' } },
-          { placeType: { contains: query, mode: 'insensitive' } },
-        ]
-      },
-      orderBy: { name: 'asc' }, // simple alphabetical sorting for now
-      take: 20
-    });
-  } else {
-    // If no query, show some default popular places
-    results = await prisma.place.findMany({
-      orderBy: { name: 'asc' },
-      take: 10
-    });
+    whereClause.OR = [
+      { name: { contains: query, mode: 'insensitive' } },
+      { city: { contains: query, mode: 'insensitive' } },
+      { country: { contains: query, mode: 'insensitive' } },
+    ];
   }
+
+  if (typeFilter) {
+    whereClause.placeType = { equals: typeFilter, mode: 'insensitive' };
+  }
+
+  results = await prisma.place.findMany({
+    where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
+    orderBy: { name: sortOrder },
+    take: 50
+  });
 
   return (
     <div className={styles.pageContainer}>
@@ -47,7 +52,7 @@ export default async function ExplorePage({
         <SearchToolbar />
 
         <h2 className={styles.resultsHeader}>
-          {query ? `Results for "${query}"` : "Popular destinations and activities"}
+          {query ? `Results for "${query}"` : typeFilter ? `${typeFilter}s` : "Popular destinations and activities"}
         </h2>
         
         <div className={styles.resultsGrid}>
