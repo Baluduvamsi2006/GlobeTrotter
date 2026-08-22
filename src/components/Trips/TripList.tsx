@@ -2,63 +2,25 @@
 import React from 'react';
 import TripCard from './TripCard';
 
-// Matches the Prisma schema Trip
-interface MockTrip {
+// Using Prisma's types conceptually, or defining a simple interface based on what we fetched
+interface Trip {
   id: string;
   title: string;
-  startDate: string;
-  endDate: string;
-  totalBudget: number;
-  status: 'ongoing' | 'upcoming' | 'completed';
+  startDate: Date | string;
+  endDate: Date | string;
+  totalBudget: any; // Prisma Decimal
+  status: string;
+  destinationCount: number;
 }
 
-const MOCK_TRIPS: MockTrip[] = [
-  {
-    id: '1',
-    title: 'Summer in Tokyo',
-    startDate: '2026-08-01T10:00:00.000Z',
-    endDate: '2026-08-30T10:00:00.000Z',
-    totalBudget: 4500,
-    status: 'ongoing'
-  },
-  {
-    id: '2',
-    title: 'Backpacking across Europe',
-    startDate: '2026-09-15T10:00:00.000Z',
-    endDate: '2026-10-15T10:00:00.000Z',
-    totalBudget: 6000,
-    status: 'upcoming'
-  },
-  {
-    id: '3',
-    title: 'Weekend in New York',
-    startDate: '2026-11-20T10:00:00.000Z',
-    endDate: '2026-11-23T10:00:00.000Z',
-    totalBudget: 1200,
-    status: 'upcoming'
-  },
-  {
-    id: '4',
-    title: 'Spring Break in Cancun',
-    startDate: '2026-03-10T10:00:00.000Z',
-    endDate: '2026-03-17T10:00:00.000Z',
-    totalBudget: 2500,
-    status: 'completed'
-  },
-  {
-    id: '5',
-    title: 'Business Trip to London',
-    startDate: '2026-01-15T10:00:00.000Z',
-    endDate: '2026-01-20T10:00:00.000Z',
-    totalBudget: 3000,
-    status: 'completed'
-  }
-];
+interface TripListProps {
+  initialTrips: Trip[];
+}
 
-export default function TripList() {
-  const ongoingTrips = MOCK_TRIPS.filter(trip => trip.status === 'ongoing');
-  const upcomingTrips = MOCK_TRIPS.filter(trip => trip.status === 'upcoming');
-  const completedTrips = MOCK_TRIPS.filter(trip => trip.status === 'completed');
+export default function TripList({ initialTrips }: TripListProps) {
+  const ongoingTrips = initialTrips.filter(trip => trip.status === 'ongoing');
+  const upcomingTrips = initialTrips.filter(trip => trip.status === 'upcoming');
+  const completedTrips = initialTrips.filter(trip => trip.status === 'completed');
 
   return (
     <div className="flex flex-col gap-8 pb-12">
@@ -70,10 +32,12 @@ export default function TripList() {
             {ongoingTrips.map(trip => (
               <TripCard 
                 key={trip.id}
+                id={trip.id}
                 title={trip.title}
                 startDate={trip.startDate}
                 endDate={trip.endDate}
                 totalBudget={trip.totalBudget}
+                destinationCount={trip.destinationCount}
               />
             ))}
           </div>
@@ -88,10 +52,12 @@ export default function TripList() {
             {upcomingTrips.map(trip => (
               <TripCard 
                 key={trip.id}
+                id={trip.id}
                 title={trip.title}
                 startDate={trip.startDate}
                 endDate={trip.endDate}
                 totalBudget={trip.totalBudget}
+                destinationCount={trip.destinationCount}
               />
             ))}
           </div>
@@ -106,14 +72,25 @@ export default function TripList() {
             {completedTrips.map(trip => (
               <TripCard 
                 key={trip.id}
+                id={trip.id}
                 title={trip.title}
                 startDate={trip.startDate}
                 endDate={trip.endDate}
                 totalBudget={trip.totalBudget}
+                destinationCount={trip.destinationCount}
               />
             ))}
           </div>
         </section>
+      )}
+
+      {initialTrips.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-slate-500 text-lg mb-4">You have no trips yet.</p>
+          <a href="/create-trip" className="inline-block bg-sky-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-sky-700 transition-colors">
+            Create your first Trip
+          </a>
+        </div>
       )}
     </div>
   );

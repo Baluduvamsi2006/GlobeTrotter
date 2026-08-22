@@ -36,7 +36,7 @@ export async function createTrip(prevState: any, formData: FormData) {
     // 1. Handle file upload if present
     if (coverPhoto && coverPhoto.size > 0) {
       const buffer = Buffer.from(await coverPhoto.arrayBuffer());
-      const filename = `${Date.now()}-${coverPhoto.name.replace(/\\s+/g, '-')}`;
+      const filename = `${Date.now()}-${coverPhoto.name.replace(/\s+/g, '-')}`;
       const uploadDir = path.join(process.cwd(), 'public', 'uploads');
       
       try {
@@ -56,14 +56,41 @@ export async function createTrip(prevState: any, formData: FormData) {
         title: name,
         startDate: new Date(start_date),
         endDate: new Date(end_date),
-        coverPhotoUrl: coverPhotoUrl,
       },
     });
 
     revalidatePath('/create-trip');
-    return { success: true, message: 'Trip created successfully with cover photo!' };
+    revalidatePath('/trips');
+    return { success: true, message: 'Trip created successfully!' };
   } catch (error) {
     console.error('Database error:', error);
     return { error: 'Failed to create trip. Please try again.' };
+  }
+}
+
+export async function deleteTrip(tripId: string) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { error: 'Unauthorized' };
+  }
+
+  try {
+    const trip = await prisma.trip.findFirst({
+      where: { id: tripId, userId: session.user.id }
+    });
+
+    if (!trip) {
+      return { error: 'Trip not found or access denied.' };
+    }
+
+    await prisma.trip.delete({
+      where: { id: tripId }
+    });
+
+    revalidatePath('/trips');
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting trip:', error);
+    return { error: 'Failed to delete trip.' };
   }
 }
