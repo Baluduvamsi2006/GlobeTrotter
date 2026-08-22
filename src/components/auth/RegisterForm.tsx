@@ -25,6 +25,7 @@ export default function RegisterForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -52,6 +53,7 @@ export default function RegisterForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (passwordMismatch) { setError('Passwords do not match'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Enter a valid email address'); return; }
     if (usernameStatus === 'taken') { setError('Username is already taken'); return; }
     setLoading(true);
     setError('');
@@ -65,9 +67,9 @@ export default function RegisterForm() {
       return;
     }
 
-    const email = formData.get('email') as string;
+    const submittedEmail = formData.get('email') as string;
     const pwd = formData.get('password') as string;
-    const res = await signIn('credentials', { redirect: false, email, password: pwd });
+    const res = await signIn('credentials', { redirect: false, email: submittedEmail, password: pwd });
     if (res?.error) {
       router.push('/login');
     } else {
@@ -148,7 +150,8 @@ export default function RegisterForm() {
       <div className="auth-row">
         <label className="auth-field">
           <span>Email Address <span className="req">*</span></span>
-          <input type="email" name="email" required placeholder="you@example.com" autoComplete="email" />
+          <input type="email" name="email" required placeholder="you@example.com" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          {email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && <small className="auth-field-error">Enter a valid email address.</small>}
         </label>
         <label className="auth-field">
           <span>Phone Number</span>

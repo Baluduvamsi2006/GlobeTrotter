@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './activities.module.css';
 
@@ -16,18 +16,23 @@ export default function SearchToolbar() {
   const [type, setType] = useState(initialType);
   const [sort, setSort] = useState(initialSort);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    applyFilters(query, type, sort);
-  };
-
-  const applyFilters = (q: string, t: string, s: string) => {
+  const applyFilters = useCallback((q: string, t: string, s: string) => {
     const params = new URLSearchParams();
     if (q.trim()) params.set('q', q.trim());
     if (t) params.set('type', t);
     if (s !== 'asc') params.set('sort', s); // 'asc' is default, omit to keep URL clean
 
     router.push(`/activities?${params.toString()}`);
+  }, [router]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => applyFilters(query, type, sort), 350);
+    return () => window.clearTimeout(timer);
+  }, [applyFilters, query, sort, type]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    applyFilters(query, type, sort);
   };
 
   return (

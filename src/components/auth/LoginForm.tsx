@@ -8,6 +8,8 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -16,13 +18,24 @@ export default function LoginForm() {
     setError('');
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    const emailValue = formData.get('email') as string;
+    const passwordValue = formData.get('password') as string;
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+      setError('Enter a valid email address.');
+      setLoading(false);
+      return;
+    }
+    if (passwordValue.length < 8) {
+      setError('Password must be at least 8 characters.');
+      setLoading(false);
+      return;
+    }
 
     const res = await signIn('credentials', {
       redirect: false,
-      email,
-      password,
+      email: emailValue,
+      password: passwordValue,
     });
 
     if (res?.error) {
@@ -44,7 +57,8 @@ export default function LoginForm() {
 
       <label className="auth-field">
         <span>Email Address</span>
-        <input type="email" name="email" required placeholder="you@example.com" autoComplete="email" />
+        <input type="email" name="email" required placeholder="you@example.com" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+        {email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && <small className="auth-field-error">Enter a valid email address.</small>}
       </label>
 
       <label className="auth-field">
@@ -56,6 +70,8 @@ export default function LoginForm() {
             required
             placeholder="••••••••"
             autoComplete="current-password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
           />
           <button
             type="button"
@@ -66,6 +82,7 @@ export default function LoginForm() {
             {showPassword ? '🙈' : '👁'}
           </button>
         </div>
+        {password.length > 0 && password.length < 8 && <small className="auth-field-error">Use at least 8 characters.</small>}
       </label>
 
       <div className="auth-extras">

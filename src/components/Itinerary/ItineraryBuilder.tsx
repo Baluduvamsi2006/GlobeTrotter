@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import ItinerarySectionCard from './ItinerarySectionCard';
 import AddSectionButton from './AddSectionButton';
 import { saveItinerarySections } from '@/app/actions/itineraryActions';
@@ -26,9 +26,35 @@ interface ItineraryBuilderProps {
   tripId: string;
 }
 
+interface BudgetSummary {
+  total: number;
+  averagePerDay: number;
+  overBudgetSections: Section[];
+}
+
+function budgetReducer(_: BudgetSummary, sections: Section[]): BudgetSummary {
+  const total = sections.reduce((sum, section) => sum + section.activities.reduce((activitySum, activity) => activitySum + activity.expense, 0), 0);
+  const days = sections.reduce((sum, section) => {
+    if (!section.dateFrom || !section.dateTo) return sum;
+    return sum + Math.max(1, Math.ceil((new Date(section.dateTo).getTime() - new Date(section.dateFrom).getTime()) / 86400000));
+  }, 0);
+  return {
+    total,
+    averagePerDay: days ? total / days : 0,
+    overBudgetSections: sections.filter((section) => section.activities.reduce((sum, activity) => sum + activity.expense, 0) > section.budget),
+  };
+}
+
 export default function ItineraryBuilder({ initialSections, tripId }: ItineraryBuilderProps) {
   const [sections, setSections] = useState<Section[]>(initialSections);
   const [isSaving, setIsSaving] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [budgetSummary, recalculateBudget] = useReducer(budgetReducer, sections, (initialSections) => budgetReducer({ total: 0, averagePerDay: 0, overBudgetSections: [] }, initialSections));
+
+  const updateSections = (nextSections: Section[]) => {
+    setSections(nextSections);
+    recalculateBudget(nextSections);
+  };
 
   const handleAddStop = () => {
     const newSection: Section = {
@@ -40,15 +66,15 @@ export default function ItineraryBuilder({ initialSections, tripId }: ItineraryB
       budget: 0.00,
       activities: []
     };
-    setSections([...sections, newSection]);
+    updateSections([...sections, newSection]);
   };
 
   const handleUpdateSection = (updatedSection: Section) => {
-    setSections(sections.map(s => s.id === updatedSection.id ? updatedSection : s));
+    updateSections(sections.map(s => s.id === updatedSection.id ? updatedSection : s));
   };
 
   const handleRemoveSection = (id: string) => {
-    setSections(sections.filter(s => s.id !== id));
+    updateSections(sections.filter(s => s.id !== id));
   };
 
   const moveSection = (index: number, direction: 'up' | 'down') => {
@@ -57,14 +83,23 @@ export default function ItineraryBuilder({ initialSections, tripId }: ItineraryB
       const temp = newSections[index - 1];
       newSections[index - 1] = newSections[index];
       newSections[index] = temp;
-      setSections(newSections);
+      updateSections(newSections);
     } else if (direction === 'down' && index < sections.length - 1) {
       const newSections = [...sections];
       const temp = newSections[index + 1];
       newSections[index + 1] = newSections[index];
       newSections[index] = temp;
-      setSections(newSections);
+      updateSections(newSections);
     }
+  };
+
+  const dropSection = (targetIndex: number) => {
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+    const nextSections = [...sections];
+    const [moved] = nextSections.splice(draggedIndex, 1);
+    nextSections.splice(targetIndex, 0, moved);
+    updateSections(nextSections);
+    setDraggedIndex(null);
   };
 
   const handleSave = async () => {
@@ -102,6 +137,12 @@ export default function ItineraryBuilder({ initialSections, tripId }: ItineraryB
         </button>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+        <div className="bg-white rounded-lg border border-slate-200 p-4"><p className="text-xs uppercase tracking-wider text-slate-500">Estimated activities</p><p className="text-2xl font-bold text-slate-800 mt-1">${budgetSummary.total.toFixed(2)}</p></div>
+        <div className="bg-white rounded-lg border border-slate-200 p-4"><p className="text-xs uppercase tracking-wider text-slate-500">Average per day</p><p className="text-2xl font-bold text-slate-800 mt-1">${budgetSummary.averagePerDay.toFixed(2)}</p></div>
+        <div className={`rounded-lg border p-4 ${budgetSummary.overBudgetSections.length ? 'border-rose-200 bg-rose-50' : 'border-emerald-200 bg-emerald-50'}`}><p className="text-xs uppercase tracking-wider text-slate-500">Budget status</p><p className={`text-lg font-bold mt-2 ${budgetSummary.overBudgetSections.length ? 'text-rose-700' : 'text-emerald-700'}`}>{budgetSummary.overBudgetSections.length ? `${budgetSummary.overBudgetSections.length} stop(s) over budget` : 'Within budget'}</p></div>
+      </div>
+
       <div className="flex flex-col gap-6">
         {sections.length === 0 && (
           <div className="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
@@ -111,7 +152,7 @@ export default function ItineraryBuilder({ initialSections, tripId }: ItineraryB
         )}
         
         {sections.map((section, index) => (
-          <div key={section.id} className="relative">
+          <div key={section.id} className={`relative ${draggedIndex === index ? 'opacity-50' : ''}`} draggable onDragStart={() => setDraggedIndex(index)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropSection(index)} onDragEnd={() => setDraggedIndex(null)}>
             {/* Reorder Controls */}
             <div className="absolute -left-12 top-4 flex flex-col gap-1 hidden md:flex">
               <button 
