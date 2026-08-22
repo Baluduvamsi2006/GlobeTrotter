@@ -19,8 +19,8 @@ interface MonthGridProps {
 export default function MonthGrid({ currentMonth, events }: MonthGridProps) {
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(monthStart);
-  const startDate = startOfWeek(monthStart, { weekStarts: 0 as const }); // Sunday start
-  const endDate = endOfWeek(monthEnd, { weekStarts: 0 as const });
+  const startDate = startOfWeek(monthStart, { weekStartsOn: 0 });
+  const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
   const dateFormat = "d";
   const days = eachDayOfInterval({
