@@ -36,6 +36,16 @@ export default function Home() {
           </div>
         </section>
 
+        <form className="search-toolbar" role="search">
+          <label className="search-field">
+            <span className="search-icon" aria-hidden="true">⌕</span>
+            <input type="search" placeholder="Search destinations or trips" aria-label="Search destinations or trips" />
+          </label>
+          <button type="button" className="filter-button">Group by <span aria-hidden="true">⌄</span></button>
+          <button type="button" className="filter-button">Filter <span aria-hidden="true">⌄</span></button>
+          <button type="button" className="filter-button">Sort by <span aria-hidden="true">⌄</span></button>
+        </form>
+
         <section className="section-block" id="trips">
           <div className="section-heading"><div><p className="eyebrow">YOUR JOURNEY</p><h2>Recent trips</h2></div><a href="#trips">View all <span aria-hidden="true">→</span></a></div>
           <div className="trip-grid">
