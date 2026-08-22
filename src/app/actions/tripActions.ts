@@ -23,6 +23,13 @@ export async function createTrip(prevState: any, formData: FormData) {
     return { error: 'Please fill out all required fields.' };
   }
 
+  const startDateObj = new Date(start_date);
+  const endDateObj = new Date(end_date);
+
+  if (startDateObj > endDateObj) {
+    return { error: 'Start date must be before or equal to end date.' };
+  }
+
   let coverPhotoUrl = null;
 
   try {

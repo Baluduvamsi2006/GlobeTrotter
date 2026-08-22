@@ -1,0 +1,161 @@
+.pageContainer {
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+
+.mainContent {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: var(--color-surface);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 1px solid var(--color-border);
+}
+
+/* Toolbar */
+.toolbarContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  align-items: center;
+}
+
+.searchForm {
+  flex-grow: 1;
+  display: flex;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.dropdownButton {
+  padding: 0.75rem 1rem;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-foreground);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropdownButton:hover {
+  background-color: var(--color-background);
+  border-color: var(--color-muted);
+}
+
+/* Results */
+.resultsHeader {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+}
+
+.resultsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.resultCard {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background-color: var(--color-surface);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.resultCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-color: var(--color-primary);
+}
+
+.cardImage {
+  width: 120px;
+  height: 90px;
+  border-radius: 6px;
+  background-color: var(--color-background);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  margin-right: 1.5rem;
+}
+
+.cardContent {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: var(--color-foreground);
+}
+
+.cardSubtitle {
+  font-size: 0.95rem;
+  color: var(--color-muted);
+  margin: 0 0 0.5rem 0;
+}
+
+.cardDescription {
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+.cardArrow {
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  padding-left: 1rem;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.resultCard:hover .cardArrow {
+  opacity: 1;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--color-muted);
+}
