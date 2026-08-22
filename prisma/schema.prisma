@@ -8,24 +8,30 @@ datasource db {
 }
 
 model User {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  firstName       String          @map("first_name") @db.VarChar(100)
-  lastName        String          @map("last_name") @db.VarChar(100)
-  email           String          @unique @db.VarChar(255)
-  passwordHash    String          @map("password_hash")
-  phoneNumber     String?         @map("phone_number") @db.VarChar(30)
-  city            String?         @db.VarChar(100)
-  country         String?         @db.VarChar(100)
-  additionalInfo  String?         @map("additional_info")
-  profilePhotoUrl String?         @map("profile_photo_url")
-  role            Role            @default(user)
-  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  calendarEvents  CalendarEvent[]
-  communityPosts  CommunityPost[]
-  postComments    PostComment[]
-  postLikes       PostLike[]
-  trips           Trip[]
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstName        String          @map("first_name") @db.VarChar(100)
+  lastName         String          @map("last_name") @db.VarChar(100)
+  username         String?         @unique @db.VarChar(30)
+  email            String          @unique @db.VarChar(255)
+  passwordHash     String          @map("password_hash")
+  phoneNumber      String?         @map("phone_number") @db.VarChar(30)
+  city             String?         @db.VarChar(100)
+  country          String?         @db.VarChar(100)
+  additionalInfo   String?         @map("additional_info")
+  profilePhotoUrl  String?         @map("profile_photo_url")
+  role             Role            @default(user)
+  securityQuestion String?         @map("security_question") @db.VarChar(200)
+  securityAnswer   String?         @map("security_answer")
+  resetToken       String?         @map("reset_token")
+  resetTokenExpiry DateTime?       @map("reset_token_expiry") @db.Timestamptz(6)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  calendarEvents   CalendarEvent[]
+  communityPosts   CommunityPost[]
+  postComments     PostComment[]
+  postLikes        PostLike[]
+  trips            Trip[]
 
   @@map("users")
 }
