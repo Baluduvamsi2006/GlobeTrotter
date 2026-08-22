@@ -85,10 +85,14 @@ export default function TripList({ initialTrips }: TripListProps) {
       )}
 
       {initialTrips.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-slate-500 text-lg mb-4">You have no trips yet.</p>
-          <a href="/create-trip" className="inline-block bg-sky-600 text-white font-medium py-2 px-6 rounded-lg hover:bg-sky-700 transition-colors">
-            Create your first Trip
+        <div className="text-center py-16 px-6 bg-gradient-to-b from-sky-50 to-white border border-sky-100 rounded-3xl shadow-sm max-w-2xl mx-auto mt-8">
+          <div className="w-20 h-20 bg-sky-100 text-sky-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+            ✈
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800 mb-2">No trips planned yet</h3>
+          <p className="text-slate-500 text-lg mb-8 max-w-md mx-auto">It's a big world out there. Start building your next adventure today.</p>
+          <a href="/create-trip" className="inline-flex items-center gap-2 bg-sky-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-sky-600/30 hover:bg-sky-700 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+            <span className="text-xl leading-none">＋</span> Create your first Trip
           </a>
         </div>
       )}

@@ -49,6 +49,7 @@ export default function ItineraryBuilder({ initialSections, tripId }: ItineraryB
   const [sections, setSections] = useState<Section[]>(initialSections);
   const [isSaving, setIsSaving] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(initialSections.length > 0 ? initialSections[0].id : null);
   const [budgetSummary, recalculateBudget] = useReducer(budgetReducer, sections, (initialSections) => budgetReducer({ total: 0, averagePerDay: 0, overBudgetSections: [] }, initialSections));
 
   const updateSections = (nextSections: Section[]) => {
@@ -67,6 +68,7 @@ export default function ItineraryBuilder({ initialSections, tripId }: ItineraryB
       activities: []
     };
     updateSections([...sections, newSection]);
+    setSelectedSectionId(newSection.id);
   };
 
   const handleUpdateSection = (updatedSection: Section) => {
@@ -122,7 +124,7 @@ export default function ItineraryBuilder({ initialSections, tripId }: ItineraryB
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto py-8 px-4">
+    <div className="w-full max-w-6xl mx-auto py-8 px-4">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-800 mb-2">Build Itinerary</h1>
@@ -137,52 +139,71 @@ export default function ItineraryBuilder({ initialSections, tripId }: ItineraryB
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-        <div className="bg-white rounded-lg border border-slate-200 p-4"><p className="text-xs uppercase tracking-wider text-slate-500">Estimated activities</p><p className="text-2xl font-bold text-slate-800 mt-1">${budgetSummary.total.toFixed(2)}</p></div>
-        <div className="bg-white rounded-lg border border-slate-200 p-4"><p className="text-xs uppercase tracking-wider text-slate-500">Average per day</p><p className="text-2xl font-bold text-slate-800 mt-1">${budgetSummary.averagePerDay.toFixed(2)}</p></div>
-        <div className={`rounded-lg border p-4 ${budgetSummary.overBudgetSections.length ? 'border-rose-200 bg-rose-50' : 'border-emerald-200 bg-emerald-50'}`}><p className="text-xs uppercase tracking-wider text-slate-500">Budget status</p><p className={`text-lg font-bold mt-2 ${budgetSummary.overBudgetSections.length ? 'text-rose-700' : 'text-emerald-700'}`}>{budgetSummary.overBudgetSections.length ? `${budgetSummary.overBudgetSections.length} stop(s) over budget` : 'Within budget'}</p></div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="bg-white/80 backdrop-blur rounded-xl border border-slate-200 p-5 shadow-sm"><p className="text-xs font-bold uppercase tracking-wider text-slate-500">Estimated activities</p><p className="text-3xl font-extrabold text-slate-800 mt-2">${budgetSummary.total.toFixed(2)}</p></div>
+        <div className="bg-white/80 backdrop-blur rounded-xl border border-slate-200 p-5 shadow-sm"><p className="text-xs font-bold uppercase tracking-wider text-slate-500">Average per day</p><p className="text-3xl font-extrabold text-slate-800 mt-2">${budgetSummary.averagePerDay.toFixed(2)}</p></div>
+        <div className={`backdrop-blur rounded-xl border p-5 shadow-sm ${budgetSummary.overBudgetSections.length ? 'border-rose-200 bg-rose-50/80' : 'border-emerald-200 bg-emerald-50/80'}`}><p className="text-xs font-bold uppercase tracking-wider text-slate-500">Budget status</p><p className={`text-xl font-bold mt-2 ${budgetSummary.overBudgetSections.length ? 'text-rose-700' : 'text-emerald-700'}`}>{budgetSummary.overBudgetSections.length ? `${budgetSummary.overBudgetSections.length} stop(s) over budget` : 'Within budget'}</p></div>
       </div>
 
-      <div className="flex flex-col gap-6">
-        {sections.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
-            <p className="text-slate-500 italic mb-4">No stops yet. Add one to get started!</p>
-            <AddSectionButton onClick={handleAddStop} />
-          </div>
-        )}
-        
-        {sections.map((section, index) => (
-          <div key={section.id} className={`relative ${draggedIndex === index ? 'opacity-50' : ''}`} draggable onDragStart={() => setDraggedIndex(index)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropSection(index)} onDragEnd={() => setDraggedIndex(null)}>
-            {/* Reorder Controls */}
-            <div className="absolute -left-12 top-4 flex flex-col gap-1 hidden md:flex">
-              <button 
-                onClick={() => moveSection(index, 'up')}
-                disabled={index === 0}
-                className="p-1 text-slate-400 hover:text-sky-600 disabled:opacity-30 transition-colors bg-white rounded-full shadow-sm border border-slate-200"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" /></svg>
-              </button>
-              <button 
-                onClick={() => moveSection(index, 'down')}
-                disabled={index === sections.length - 1}
-                className="p-1 text-slate-400 hover:text-sky-600 disabled:opacity-30 transition-colors bg-white rounded-full shadow-sm border border-slate-200"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
-              </button>
-            </div>
-
-            <ItinerarySectionCard
-              section={section}
-              onUpdate={handleUpdateSection}
-              onRemove={() => handleRemoveSection(section.id)}
-            />
-          </div>
-        ))}
-      </div>
-
-      {sections.length > 0 && (
-        <div className="mt-8 flex justify-center">
+      {sections.length === 0 ? (
+        <div className="text-center py-16 bg-white/50 backdrop-blur rounded-2xl border border-dashed border-slate-300 shadow-sm">
+          <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/></svg></div>
+          <p className="text-slate-500 text-lg mb-6">No stops yet. Add one to get started!</p>
           <AddSectionButton onClick={handleAddStop} />
+        </div>
+      ) : (
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Sidebar / Tabs */}
+          <div className="w-full md:w-1/3 lg:w-1/4 flex flex-col gap-2">
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2 px-1">Your Stops</h3>
+            <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0">
+              {sections.map((section, index) => (
+                <div 
+                  key={section.id} 
+                  className={`relative flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all flex-shrink-0 md:flex-shrink w-48 md:w-full ${selectedSectionId === section.id ? 'bg-sky-50 border-sky-300 shadow-sm' : 'bg-white border-slate-200 hover:border-sky-300 hover:bg-slate-50'} ${draggedIndex === index ? 'opacity-50' : ''}`}
+                  onClick={() => setSelectedSectionId(section.id)}
+                  draggable 
+                  onDragStart={() => setDraggedIndex(index)} 
+                  onDragOver={(event) => event.preventDefault()} 
+                  onDrop={() => dropSection(index)} 
+                  onDragEnd={() => setDraggedIndex(null)}
+                >
+                  <div className="truncate">
+                    <div className="text-xs font-bold text-sky-600 mb-0.5">Stop {index + 1}</div>
+                    <div className="font-semibold text-slate-800 truncate">{section.title}</div>
+                  </div>
+                  {/* Reorder Controls (Desktop only) */}
+                  <div className="hidden md:flex flex-col gap-1 absolute -right-3">
+                    <button onClick={(e) => { e.stopPropagation(); moveSection(index, 'up'); }} disabled={index === 0} className="w-6 h-6 flex items-center justify-center bg-white border border-slate-200 rounded-full text-slate-400 hover:text-sky-600 disabled:opacity-30 shadow-sm"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" /></svg></button>
+                    <button onClick={(e) => { e.stopPropagation(); moveSection(index, 'down'); }} disabled={index === sections.length - 1} className="w-6 h-6 flex items-center justify-center bg-white border border-slate-200 rounded-full text-slate-400 hover:text-sky-600 disabled:opacity-30 shadow-sm"><svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg></button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 md:mt-4">
+              <AddSectionButton onClick={handleAddStop} />
+            </div>
+          </div>
+
+          {/* Main Content Area */}
+          <div className="w-full md:w-2/3 lg:w-3/4">
+            {sections.filter(s => s.id === selectedSectionId).map(section => (
+              <ItinerarySectionCard
+                key={section.id}
+                section={section}
+                onUpdate={handleUpdateSection}
+                onRemove={() => {
+                  handleRemoveSection(section.id);
+                  if (sections.length > 1) {
+                    const newId = sections.find(s => s.id !== section.id)?.id;
+                    if (newId) setSelectedSectionId(newId);
+                  } else {
+                    setSelectedSectionId(null);
+                  }
+                }}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

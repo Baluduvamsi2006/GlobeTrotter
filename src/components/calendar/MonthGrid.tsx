@@ -39,9 +39,9 @@ export default function MonthGrid({ currentMonth, events }: MonthGridProps) {
   return (
     <div className="w-full mt-6 bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden flex flex-col">
       {/* Header Row */}
-      <div className="grid grid-cols-7 bg-gray-50 border-b border-gray-200">
+      <div className="grid grid-cols-7 bg-slate-50/80 backdrop-blur border-b border-slate-200">
         {weekDays.map((day) => (
-          <div key={day} className="py-3 text-center text-xs font-bold text-gray-500 tracking-wider">
+          <div key={day} className="py-3 text-center text-xs font-bold text-slate-500 tracking-wider">
             {day}
           </div>
         ))}
@@ -128,10 +128,11 @@ export default function MonthGrid({ currentMonth, events }: MonthGridProps) {
                         height: '48px' // "half box full" - a thicker bar that takes up a good chunk of the cell
                       }}
                       className={`
-                        flex items-center text-sm font-bold text-white px-3 py-1 truncate pointer-events-auto shadow-sm
+                        flex items-center text-sm font-bold text-white px-3 py-1 truncate pointer-events-auto shadow-md backdrop-blur-sm bg-opacity-90 hover:scale-[1.02] hover:shadow-lg transition-all
                         ${event.color}
-                        ${isStart ? 'rounded-l-md ml-1' : ''} 
-                        ${isEnd ? 'rounded-r-md mr-1' : ''}
+                        ${isStart ? 'rounded-l-xl ml-1' : ''} 
+                        ${isEnd ? 'rounded-r-xl mr-1' : ''}
+                        ${!isStart && !isEnd ? 'rounded-none' : ''}
                       `}
                       title={event.title}
                     >

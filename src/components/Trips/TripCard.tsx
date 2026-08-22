@@ -41,9 +41,9 @@ export default function TripCard({ id, title, startDate, endDate, totalBudget, d
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-4 transition-all duration-200 hover:shadow-md hover:border-sky-300 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div className="flex-1">
-        <h3 className="text-xl font-semibold text-slate-800 mb-4">{title}</h3>
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-4 transition-all duration-300 hover:shadow-xl hover:border-sky-300 transform hover:-translate-y-1 flex flex-col md:flex-row md:items-center justify-between gap-4 group">
+      <div className="flex-1 min-w-0">
+        <h3 className="text-xl font-bold text-slate-800 mb-4 group-hover:text-sky-600 transition-colors truncate">{title}</h3>
         
         <div className="flex flex-wrap gap-4">
           {/* Date Range */}
@@ -74,23 +74,23 @@ export default function TripCard({ id, title, startDate, endDate, totalBudget, d
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-3 mt-4 md:mt-0">
+      <div className="flex items-center gap-3 mt-4 md:mt-0 flex-shrink-0">
         <Link 
           href={`/itinerary-view?tripId=${id}`}
-          className="px-4 py-2 text-sm font-medium text-sky-700 bg-sky-50 border border-sky-200 rounded-lg hover:bg-sky-100 transition-colors"
+          className="px-4 py-2.5 text-sm font-bold text-sky-700 bg-sky-50 border border-sky-200 rounded-xl hover:bg-sky-100 hover:shadow-sm active:scale-95 transition-all"
         >
           View
         </Link>
         <Link 
           href={`/build-itinerary?tripId=${id}`}
-          className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors"
+          className="px-4 py-2.5 text-sm font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 hover:shadow-sm active:scale-95 transition-all"
         >
           Edit
         </Link>
         <button 
           onClick={handleDelete}
           disabled={isDeleting}
-          className="px-4 py-2 text-sm font-medium text-rose-700 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition-colors disabled:opacity-50"
+          className="px-4 py-2.5 text-sm font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-xl hover:bg-rose-100 hover:shadow-sm active:scale-95 transition-all disabled:opacity-50"
         >
           {isDeleting ? '...' : 'Delete'}
         </button>

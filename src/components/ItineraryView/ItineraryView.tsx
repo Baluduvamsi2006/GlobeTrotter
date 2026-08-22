@@ -1,6 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+
+const COLORS = ['#0284c7', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 export interface Activity {
   id: string;
@@ -24,7 +27,7 @@ interface ItineraryViewProps {
 }
 
 export default function ItineraryView({ sections, tripId }: ItineraryViewProps) {
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'calendar' | 'budget'>('list');
 
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return 'Dates TBD';
@@ -40,24 +43,30 @@ export default function ItineraryView({ sections, tripId }: ItineraryViewProps) 
         <h2 className="text-3xl font-bold text-slate-800 tracking-tight">
           Itinerary View
         </h2>
-        <div className="flex items-center gap-4">
-          <div className="flex bg-slate-200 p-1 rounded-lg">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex bg-slate-200/50 p-1 rounded-xl backdrop-blur-sm border border-slate-200">
             <button 
               onClick={() => setViewMode('list')}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'list' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'list' ? 'bg-white text-sky-700 shadow-md transform scale-105' : 'text-slate-500 hover:text-slate-700'}`}
             >
               List
             </button>
             <button 
               onClick={() => setViewMode('calendar')}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'calendar' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'calendar' ? 'bg-white text-sky-700 shadow-md transform scale-105' : 'text-slate-500 hover:text-slate-700'}`}
             >
               Calendar
+            </button>
+            <button 
+              onClick={() => setViewMode('budget')}
+              className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === 'budget' ? 'bg-white text-sky-700 shadow-md transform scale-105' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              Budget
             </button>
           </div>
           <Link 
             href={`/build-itinerary?tripId=${tripId}`}
-            className="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-slate-900 transition-colors shadow-sm"
+            className="bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5"
           >
             Edit Itinerary
           </Link>
@@ -162,6 +171,63 @@ export default function ItineraryView({ sections, tripId }: ItineraryViewProps) 
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* BUDGET VIEW */}
+        {viewMode === 'budget' && (
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+            <h3 className="text-2xl font-bold text-slate-800 mb-8">Budget Breakdown</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="flex flex-col">
+                <h4 className="text-lg font-bold text-slate-700 mb-4 text-center">Expenses by Stop</h4>
+                <div className="h-72 w-full">
+                  {sections.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={sections.map(s => ({ name: s.title, value: s.activities.reduce((sum, a) => sum + a.expense, 0) || 1 }))}
+                          cx="50%"
+                          cy="50%"
+                          innerRadius={60}
+                          outerRadius={90}
+                          paddingAngle={5}
+                          dataKey="value"
+                        >
+                          {sections.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value: any) => `$${Number(value || 0).toFixed(2)}`} />
+                        <Legend />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-slate-400">No data available</div>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <h4 className="text-lg font-bold text-slate-700 mb-4 text-center">Planned vs Actual</h4>
+                <div className="h-72 w-full">
+                  {sections.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={sections.map(s => ({ name: s.title, planned: s.budget, actual: s.activities.reduce((sum, a) => sum + a.expense, 0) }))}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                        <YAxis tick={{ fontSize: 12 }} />
+                        <Tooltip formatter={(value: any) => `$${Number(value || 0).toFixed(2)}`} />
+                        <Legend />
+                        <Bar dataKey="planned" name="Planned" fill="#cbd5e1" radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="actual" name="Actual" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-slate-400">No data available</div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

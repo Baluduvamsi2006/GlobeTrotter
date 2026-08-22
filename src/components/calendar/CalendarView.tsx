@@ -25,36 +25,36 @@ export default function CalendarView({ initialEvents }: CalendarViewProps) {
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col gap-8">
       {/* Top Header / Controls */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-sky-500" size={20} />
           <input
             type="text"
             placeholder="Search events..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-white shadow-sm"
+            className="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-white/70 backdrop-blur shadow-sm transition-all text-slate-800 placeholder-slate-400 font-medium"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="flex gap-2">
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
-            <Layers size={16} />
+        <div className="flex flex-wrap sm:flex-nowrap gap-3">
+          <button className="flex-1 sm:flex-none items-center justify-center flex gap-2 px-5 py-3 bg-white/70 backdrop-blur border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 shadow-sm hover:bg-white hover:shadow-md transition-all">
+            <Layers size={18} className="text-sky-500" />
             Group by
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
-            <Filter size={16} />
+          <button className="flex-1 sm:flex-none items-center justify-center flex gap-2 px-5 py-3 bg-white/70 backdrop-blur border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 shadow-sm hover:bg-white hover:shadow-md transition-all">
+            <Filter size={18} className="text-sky-500" />
             Filter
           </button>
           
-          <div className="relative shadow-sm">
+          <div className="relative shadow-sm flex-1 sm:flex-none">
             <select
-              className="appearance-none flex items-center gap-2 pl-9 pr-8 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer"
+              className="w-full appearance-none flex items-center gap-2 pl-10 pr-8 py-3 bg-white/70 backdrop-blur border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 hover:bg-white hover:shadow-md transition-all cursor-pointer outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
             >
               <option value="date">Sort by Date</option>
               <option value="name">Sort by Name</option>
             </select>
-            <ArrowDownUp size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            <ArrowDownUp size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-sky-500 pointer-events-none" />
           </div>
         </div>
       </div>
