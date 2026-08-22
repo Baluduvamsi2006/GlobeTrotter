@@ -1,0 +1,187 @@
+.dashboardContainer {
+  min-height: calc(100vh - 64px); /* Assuming nav is ~64px */
+  background-color: #121212;
+  color: #fff;
+  padding: 2rem 4vw;
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboardHeader {
+  margin-bottom: 2rem;
+}
+
+.dashboardHeader h1 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin: 0;
+  color: #e0e0e0;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.searchBox {
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  width: 100%;
+  background-color: transparent;
+  border: 1px solid #444;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  color: white;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: #777;
+}
+
+.toolbarActions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.toolBtn {
+  background-color: transparent;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #ccc;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toolBtn:hover {
+  background-color: #222;
+  border-color: #666;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid #333;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.tabBtn {
+  background-color: transparent;
+  border: 1px solid #444;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  color: #999;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tabBtn:hover {
+  color: #fff;
+  background-color: #1a1a1a;
+}
+
+.activeTab {
+  background-color: #1e1e1e;
+  border-color: #555;
+  color: #fff;
+}
+
+.contentArea {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 2rem;
+  min-height: 500px;
+}
+
+.trendsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.chartCard {
+  background-color: #222;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #333;
+}
+
+.chartCard h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #ddd;
+  text-align: center;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.adminTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.adminTable th, .adminTable td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.adminTable th {
+  color: #999;
+  font-weight: 500;
+}
+
+.adminTable tr:hover {
+  background-color: #222;
+}
+
+.roleBadge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.roleBadge.admin {
+  background-color: rgba(255, 69, 58, 0.2);
+  color: #ff453a;
+}
+
+.roleBadge.user {
+  background-color: rgba(48, 209, 88, 0.2);
+  color: #30d158;
+}
+
+.comingSoon {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #777;
+}
+
+.comingSoon h3 {
+  color: #ccc;
+  margin-bottom: 0.5rem;
+}
