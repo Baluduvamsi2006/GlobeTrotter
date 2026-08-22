@@ -3,86 +3,147 @@
 import React, { useState } from 'react';
 import ItinerarySectionCard from './ItinerarySectionCard';
 import AddSectionButton from './AddSectionButton';
+import { saveItinerarySections } from '@/app/actions/itineraryActions';
 
-// Matches the Prisma schema for ItinerarySection broadly
-interface MockSection {
+export interface SectionActivity {
   id: string;
-  title: string;
-  description: string;
-  dateFrom: string;
-  dateTo: string;
-  budget: number;
+  name: string;
+  expense: number;
 }
 
-const INITIAL_SECTIONS: MockSection[] = [
-  {
-    id: '1',
-    title: 'Section 1: Flights & Arrival',
-    description: 'Flight to destination, airport transfer, and checking into the hotel.',
-    dateFrom: '2026-09-01T10:00:00.000Z',
-    dateTo: '2026-09-01T18:00:00.000Z',
-    budget: 850.00,
-  },
-  {
-    id: '2',
-    title: 'Section 2: City Exploration',
-    description: 'Guided tour of the historical downtown and lunch at the famous plaza.',
-    dateFrom: '2026-09-02T09:00:00.000Z',
-    dateTo: '2026-09-02T15:00:00.000Z',
-    budget: 120.00,
-  },
-  {
-    id: '3',
-    title: 'Section 3: Museum Day',
-    description: 'Visiting the national art museum and surrounding parks.',
-    dateFrom: '2026-09-03T10:00:00.000Z',
-    dateTo: '2026-09-03T14:00:00.000Z',
-    budget: 45.00,
-  }
-];
+export interface Section {
+  id: string;
+  title: string;
+  description: string | null;
+  dateFrom: string | null;
+  dateTo: string | null;
+  budget: number;
+  activities: SectionActivity[];
+}
 
-export default function ItineraryBuilder() {
-  const [sections, setSections] = useState<MockSection[]>(INITIAL_SECTIONS);
+interface ItineraryBuilderProps {
+  initialSections: Section[];
+  tripId: string;
+}
 
-  const handleAddSection = () => {
-    const newSectionId = String(sections.length + 1);
-    
-    // Create a generic new section
-    const newSection: MockSection = {
-      id: newSectionId,
-      title: `Section ${newSectionId}: New Activity`,
-      description: 'Add details about this new itinerary section here...',
-      dateFrom: new Date().toISOString(),
-      dateTo: new Date(Date.now() + 86400000).toISOString(), // +1 day
+export default function ItineraryBuilder({ initialSections, tripId }: ItineraryBuilderProps) {
+  const [sections, setSections] = useState<Section[]>(initialSections);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleAddStop = () => {
+    const newSection: Section = {
+      id: String(Date.now()), // temporary id
+      title: `City/Stop ${sections.length + 1}`,
+      description: '',
+      dateFrom: new Date().toISOString().split('T')[0],
+      dateTo: new Date(Date.now() + 86400000).toISOString().split('T')[0],
       budget: 0.00,
+      activities: []
     };
-    
     setSections([...sections, newSection]);
   };
 
+  const handleUpdateSection = (updatedSection: Section) => {
+    setSections(sections.map(s => s.id === updatedSection.id ? updatedSection : s));
+  };
+
+  const handleRemoveSection = (id: string) => {
+    setSections(sections.filter(s => s.id !== id));
+  };
+
+  const moveSection = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index > 0) {
+      const newSections = [...sections];
+      const temp = newSections[index - 1];
+      newSections[index - 1] = newSections[index];
+      newSections[index] = temp;
+      setSections(newSections);
+    } else if (direction === 'down' && index < sections.length - 1) {
+      const newSections = [...sections];
+      const temp = newSections[index + 1];
+      newSections[index + 1] = newSections[index];
+      newSections[index] = temp;
+      setSections(newSections);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    const result = await saveItinerarySections(tripId, sections.map(s => ({
+      title: s.title,
+      type: s.description,
+      startDate: s.dateFrom ? new Date(s.dateFrom) : null,
+      endDate: s.dateTo ? new Date(s.dateTo) : null,
+      budget: s.budget,
+      activities: s.activities
+    })));
+    setIsSaving(false);
+    
+    if (result.success) {
+      alert(result.message);
+    } else {
+      alert(result.error);
+    }
+  };
+
   return (
-    <div className="w-full max-w-3xl mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-800 mb-2">Build Itinerary</h1>
-        <p className="text-slate-600">Plan your trip day by day with flexible sections.</p>
+    <div className="w-full max-w-4xl mx-auto py-8 px-4">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-800 mb-2">Build Itinerary</h1>
+          <p className="text-slate-600">Plan your trip day by day by adding stops and activities.</p>
+        </div>
+        <button 
+          onClick={handleSave} 
+          disabled={isSaving}
+          className="bg-sky-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-sky-700 transition-colors disabled:opacity-50 shadow-sm"
+        >
+          {isSaving ? 'Saving...' : 'Save Itinerary'}
+        </button>
       </div>
 
-      <div className="flex flex-col gap-2">
-        {sections.map((section) => (
-          <ItinerarySectionCard
-            key={section.id}
-            title={section.title}
-            description={section.description}
-            dateFrom={section.dateFrom}
-            dateTo={section.dateTo}
-            budget={section.budget}
-          />
+      <div className="flex flex-col gap-6">
+        {sections.length === 0 && (
+          <div className="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300">
+            <p className="text-slate-500 italic mb-4">No stops yet. Add one to get started!</p>
+            <AddSectionButton onClick={handleAddStop} />
+          </div>
+        )}
+        
+        {sections.map((section, index) => (
+          <div key={section.id} className="relative">
+            {/* Reorder Controls */}
+            <div className="absolute -left-12 top-4 flex flex-col gap-1 hidden md:flex">
+              <button 
+                onClick={() => moveSection(index, 'up')}
+                disabled={index === 0}
+                className="p-1 text-slate-400 hover:text-sky-600 disabled:opacity-30 transition-colors bg-white rounded-full shadow-sm border border-slate-200"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 15l7-7 7 7" /></svg>
+              </button>
+              <button 
+                onClick={() => moveSection(index, 'down')}
+                disabled={index === sections.length - 1}
+                className="p-1 text-slate-400 hover:text-sky-600 disabled:opacity-30 transition-colors bg-white rounded-full shadow-sm border border-slate-200"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+              </button>
+            </div>
+
+            <ItinerarySectionCard
+              section={section}
+              onUpdate={handleUpdateSection}
+              onRemove={() => handleRemoveSection(section.id)}
+            />
+          </div>
         ))}
       </div>
 
-      <div className="mt-4">
-        <AddSectionButton onClick={handleAddSection} />
-      </div>
+      {sections.length > 0 && (
+        <div className="mt-8 flex justify-center">
+          <AddSectionButton onClick={handleAddStop} />
+        </div>
+      )}
     </div>
   );
 }
