@@ -1,21 +1,10 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
-enum Role {
-  user
-  admin
-}
-
-enum TripStatus {
-  ongoing
-  upcoming
-  completed
+datasource db {
+  provider = "postgresql"
 }
 
 model User {
@@ -33,14 +22,14 @@ model User {
   role             Role            @default(user)
   securityQuestion String?         @map("security_question") @db.VarChar(200)
   securityAnswer   String?         @map("security_answer")
-  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-
-  trips            Trip[]
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  calendarEvents   CalendarEvent[]
   communityPosts   CommunityPost[]
   postComments     PostComment[]
   postLikes        PostLike[]
-  calendarEvents   CalendarEvent[]
+  trips            Trip[]
 
   @@map("users")
 }
@@ -56,10 +45,9 @@ model Place {
   photoUrl    String?     @map("photo_url")
   latitude    Decimal?    @db.Decimal(9, 6)
   longitude   Decimal?    @db.Decimal(9, 6)
-  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz
-
-  tripPlaces  TripPlace[]
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   activities  Activity[]
+  tripPlaces  TripPlace[]
 
   @@map("places")
 }
@@ -73,14 +61,14 @@ model Trip {
   endDate           DateTime           @map("end_date") @db.Date
   totalBudget       Decimal?           @map("total_budget") @db.Decimal(12, 2)
   actualSpend       Decimal?           @default(0) @map("actual_spend") @db.Decimal(12, 2)
-  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-
-  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tripPlaces        TripPlace[]
-  itinerarySections ItinerarySection[]
-  communityPosts    CommunityPost[]
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  coverPhotoUrl     String?            @map("cover_photo_url")
   calendarEvents    CalendarEvent[]
+  communityPosts    CommunityPost[]
+  itinerarySections ItinerarySection[]
+  tripPlaces        TripPlace[]
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
@@ -92,9 +80,8 @@ model TripPlace {
   tripId     String @map("trip_id") @db.Uuid
   placeId    String @map("place_id") @db.Uuid
   visitOrder Int    @default(0) @map("visit_order")
-
+  place      Place  @relation(fields: [placeId], references: [id])
   trip       Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  place      Place  @relation(fields: [placeId], references: [id], onDelete: Restrict)
 
   @@map("trip_places")
 }
@@ -109,9 +96,8 @@ model ItinerarySection {
   dateTo      DateTime?  @map("date_to") @db.Date
   budget      Decimal?   @db.Decimal(12, 2)
   sortOrder   Int        @default(0) @map("sort_order")
-
-  trip        Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
   activities  Activity[]
+  trip        Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
 
   @@index([tripId])
   @@map("itinerary_sections")
@@ -129,9 +115,8 @@ model Activity {
   expense        Decimal?            @default(0) @db.Decimal(12, 2)
   activityType   String?             @map("activity_type") @db.VarChar(50)
   sortOrder      Int                 @default(0) @map("sort_order")
-
+  place          Place?              @relation(fields: [placeId], references: [id])
   section        ItinerarySection    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  place          Place?              @relation(fields: [placeId], references: [id], onDelete: SetNull)
   searchTags     ActivitySearchTag[]
   calendarEvents CalendarEvent[]
 
@@ -148,11 +133,10 @@ model CommunityPost {
   body      String?
   photoUrl  String?       @map("photo_url")
   likeCount Int           @default(0) @map("like_count")
-  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
-
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  trip      Trip?         @relation(fields: [tripId], references: [id])
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trip      Trip?         @relation(fields: [tripId], references: [id], onDelete: SetNull)
   comments  PostComment[]
   likes     PostLike[]
 
@@ -162,12 +146,11 @@ model CommunityPost {
 }
 
 model PostComment {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  postId    String   @map("post_id") @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String        @map("post_id") @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
   body      String
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -176,11 +159,10 @@ model PostComment {
 }
 
 model PostLike {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  postId    String   @map("post_id") @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String        @map("post_id") @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -197,11 +179,10 @@ model CalendarEvent {
   title      String    @db.VarChar(200)
   eventDate  DateTime  @map("event_date") @db.Date
   colorTag   String?   @map("color_tag") @db.VarChar(20)
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
-
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  activity   Activity? @relation(fields: [activityId], references: [id])
+  trip       Trip?     @relation(fields: [tripId], references: [id])
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trip       Trip?     @relation(fields: [tripId], references: [id], onDelete: SetNull)
-  activity   Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
 
   @@index([userId, eventDate])
   @@map("calendar_events")
@@ -211,7 +192,6 @@ model ActivitySearchTag {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   activityId String   @map("activity_id") @db.Uuid
   tag        String   @db.VarChar(100)
-
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
   @@index([tag])
@@ -223,8 +203,19 @@ model AdminAnalytics {
   metricType String   @map("metric_type") @db.VarChar(100)
   metricData Json     @map("metric_data")
   recordedOn DateTime @map("recorded_on") @db.Date
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([metricType, recordedOn])
   @@map("admin_analytics")
+}
+
+enum Role {
+  user
+  admin
+}
+
+enum TripStatus {
+  ongoing
+  upcoming
+  completed
 }

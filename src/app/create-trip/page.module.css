@@ -92,10 +92,10 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 1rem;
   border: 1px solid #E2E8F0;
   transition: transform 0.3s, box-shadow 0.3s;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .card:hover {
@@ -104,8 +104,70 @@
   border-color: var(--color-primary);
 }
 
+.cardOverlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0));
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 1rem;
+}
+
 .cardTitle {
+  color: white;
   font-weight: bold;
   font-size: 1.1rem;
-  color: var(--color-primary);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+.dropzone {
+  border: 2px dashed #CBD5E1;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #F8FAFC;
+  position: relative;
+  overflow: hidden;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+}
+
+.dropzone:hover {
+  border-color: var(--color-primary);
+  background-color: #F1F5F9;
+}
+
+.dropzoneContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #64748B;
+}
+
+.uploadIcon {
+  font-size: 3rem;
+}
+
+.dropzoneOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.dropzone:hover .dropzoneOverlay {
+  opacity: 1;
 }
