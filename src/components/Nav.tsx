@@ -17,6 +17,7 @@ export default async function Nav() {
             </a>
             <nav className="nav-links" aria-label="Main navigation">
                 <a className="nav-link active" href="/#overview">Overview</a>
+                <a className="nav-link" href="/build-itinerary">Build Itinerary</a>
                 <a className="nav-link" href="/#trips">My trips</a>
                 <a className="nav-link" href="/#explore">Explore</a>
             </nav>
