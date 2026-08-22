@@ -1,6 +1,19 @@
 @import "tailwindcss";
 
 :root {
+  /* Core Brand */
+  --color-primary: #0284C7;
+  --color-accent: #F97316;
+
+  /* Background & Surface */
+  --color-bg-app: #F1F5F9;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #1E293B;
+
+  /* Functional Status */
+  --color-success: #10B981;
+  --color-alert: #EF4444;
+
   --background: #ffffff;
   --foreground: #171717;
 }
