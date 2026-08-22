@@ -1,0 +1,2 @@
+-- This migration adds the sync_like_count trigger (placeholder restored)
+-- The trigger was applied directly via SQL earlier.

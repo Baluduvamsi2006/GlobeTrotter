@@ -2,6 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import Nav from '../../../components/Nav';
 import Footer from '../../../components/Footer';
+import AddButton from './AddButton';
 import styles from './detail.module.css';
 import { prisma } from '../../../lib/prisma';
 
@@ -21,7 +22,8 @@ export default async function ActivityDetailPage({
     notFound();
   }
 
-  const bgImage = place.photoUrl || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80';
+  const rawBg = place.photoUrl || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80';
+  const bgImage = rawBg.replace('w=600&q=80', 'w=1920&q=90');
 
   return (
     <div className={styles.pageContainer}>
@@ -54,7 +56,7 @@ export default async function ActivityDetailPage({
 
         <div className={styles.actionSection}>
           <a href="/activities" className={styles.backButton}>&larr; Back to Activities</a>
-          <button className={styles.addButton}>+ Add to Itinerary</button>
+          <AddButton />
         </div>
       </main>
 
