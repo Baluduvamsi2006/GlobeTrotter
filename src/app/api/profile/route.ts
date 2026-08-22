@@ -19,7 +19,7 @@ export async function POST(request: Request) {
         const session = await auth();
         if (!session?.user?.id) return NextResponse.json({ error: "Authentication required." }, { status: 401 });
         const body = await request.formData();
-        const user = await prisma.user.update({
+        await prisma.user.update({
             where: { id: session.user.id },
             data: {
                 firstName: String(body.get("firstName") || ""),
@@ -59,11 +59,10 @@ export async function PUT(request: Request) {
     }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE() {
     try {
         const session = await auth();
         if (!session?.user?.id) return NextResponse.json({ error: "Authentication required." }, { status: 401 });
-        const body = await request.json();
         await prisma.user.delete({ where: { id: session.user.id } });
         return NextResponse.json({ deleted: true });
     } catch (error) {

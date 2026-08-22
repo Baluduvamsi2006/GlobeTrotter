@@ -11,6 +11,9 @@ ALTER TABLE users
   ADD COLUMN IF NOT EXISTS reset_token TEXT,
   ADD COLUMN IF NOT EXISTS reset_token_expiry TIMESTAMPTZ;
 
+ALTER TABLE trips
+  ADD COLUMN IF NOT EXISTS cover_photo_url TEXT;
+
 -- Create unique index only if it doesn't exist
 CREATE UNIQUE INDEX IF NOT EXISTS users_username_key ON users(username) WHERE username IS NOT NULL;
 `;
