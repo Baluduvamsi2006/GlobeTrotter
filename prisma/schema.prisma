@@ -1,0 +1,227 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+enum Role {
+  user
+  admin
+}
+
+enum TripStatus {
+  ongoing
+  upcoming
+  completed
+}
+
+model User {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstName       String          @map("first_name") @db.VarChar(100)
+  lastName        String          @map("last_name") @db.VarChar(100)
+  email           String          @unique @db.VarChar(255)
+  passwordHash    String          @map("password_hash")
+  phoneNumber     String?         @map("phone_number") @db.VarChar(30)
+  city            String?         @db.VarChar(100)
+  country         String?         @db.VarChar(100)
+  additionalInfo  String?         @map("additional_info")
+  profilePhotoUrl String?         @map("profile_photo_url")
+  role            Role            @default(user)
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  trips           Trip[]
+  communityPosts  CommunityPost[]
+  postComments    PostComment[]
+  postLikes       PostLike[]
+  calendarEvents  CalendarEvent[]
+
+  @@map("users")
+}
+
+model Place {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String      @db.VarChar(200)
+  city        String      @db.VarChar(100)
+  country     String      @db.VarChar(100)
+  region      String?     @db.VarChar(100)
+  placeType   String?     @map("place_type") @db.VarChar(50)
+  description String?
+  photoUrl    String?     @map("photo_url")
+  latitude    Decimal?    @db.Decimal(9, 6)
+  longitude   Decimal?    @db.Decimal(9, 6)
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz
+
+  tripPlaces  TripPlace[]
+  activities  Activity[]
+
+  @@map("places")
+}
+
+model Trip {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String             @map("user_id") @db.Uuid
+  title             String             @db.VarChar(200)
+  status            TripStatus         @default(upcoming)
+  startDate         DateTime           @map("start_date") @db.Date
+  endDate           DateTime           @map("end_date") @db.Date
+  totalBudget       Decimal?           @map("total_budget") @db.Decimal(12, 2)
+  actualSpend       Decimal?           @default(0) @map("actual_spend") @db.Decimal(12, 2)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tripPlaces        TripPlace[]
+  itinerarySections ItinerarySection[]
+  communityPosts    CommunityPost[]
+  calendarEvents    CalendarEvent[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("trips")
+}
+
+model TripPlace {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tripId     String @map("trip_id") @db.Uuid
+  placeId    String @map("place_id") @db.Uuid
+  visitOrder Int    @default(0) @map("visit_order")
+
+  trip       Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  place      Place  @relation(fields: [placeId], references: [id], onDelete: Restrict)
+
+  @@map("trip_places")
+}
+
+model ItinerarySection {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tripId      String     @map("trip_id") @db.Uuid
+  title       String     @db.VarChar(200)
+  description String?
+  sectionType String?    @map("section_type") @db.VarChar(50)
+  dateFrom    DateTime?  @map("date_from") @db.Date
+  dateTo      DateTime?  @map("date_to") @db.Date
+  budget      Decimal?   @db.Decimal(12, 2)
+  sortOrder   Int        @default(0) @map("sort_order")
+
+  trip        Trip       @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  activities  Activity[]
+
+  @@index([tripId])
+  @@map("itinerary_sections")
+}
+
+model Activity {
+  id             String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sectionId      String              @map("section_id") @db.Uuid
+  placeId        String?             @map("place_id") @db.Uuid
+  name           String              @db.VarChar(200)
+  description    String?
+  activityDate   DateTime?           @map("activity_date") @db.Date
+  startTime      DateTime?           @map("start_time") @db.Time(6)
+  endTime        DateTime?           @map("end_time") @db.Time(6)
+  expense        Decimal?            @default(0) @db.Decimal(12, 2)
+  activityType   String?             @map("activity_type") @db.VarChar(50)
+  sortOrder      Int                 @default(0) @map("sort_order")
+
+  section        ItinerarySection    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  place          Place?              @relation(fields: [placeId], references: [id], onDelete: SetNull)
+  searchTags     ActivitySearchTag[]
+  calendarEvents CalendarEvent[]
+
+  @@index([sectionId])
+  @@index([activityDate])
+  @@map("activities")
+}
+
+model CommunityPost {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  tripId    String?       @map("trip_id") @db.Uuid
+  title     String        @db.VarChar(300)
+  body      String?
+  photoUrl  String?       @map("photo_url")
+  likeCount Int           @default(0) @map("like_count")
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip      Trip?         @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  comments  PostComment[]
+  likes     PostLike[]
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@map("community_posts")
+}
+
+model PostComment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  body      String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("post_comments")
+}
+
+model PostLike {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@index([postId])
+  @@map("post_likes")
+}
+
+model CalendarEvent {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  tripId     String?   @map("trip_id") @db.Uuid
+  activityId String?   @map("activity_id") @db.Uuid
+  title      String    @db.VarChar(200)
+  eventDate  DateTime  @map("event_date") @db.Date
+  colorTag   String?   @map("color_tag") @db.VarChar(20)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip       Trip?     @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  activity   Activity? @relation(fields: [activityId], references: [id], onDelete: SetNull)
+
+  @@index([userId, eventDate])
+  @@map("calendar_events")
+}
+
+model ActivitySearchTag {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  activityId String   @map("activity_id") @db.Uuid
+  tag        String   @db.VarChar(100)
+
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([tag])
+  @@map("activity_search_tags")
+}
+
+model AdminAnalytics {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  metricType String   @map("metric_type") @db.VarChar(100)
+  metricData Json     @map("metric_data")
+  recordedOn DateTime @map("recorded_on") @db.Date
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@index([metricType, recordedOn])
+  @@map("admin_analytics")
+}
