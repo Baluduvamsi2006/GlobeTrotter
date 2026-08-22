@@ -25,7 +25,7 @@ export default function Home() {
             <h1>Good morning, Alex <span aria-hidden="true">✈</span></h1>
             <p className="welcome-copy">Your next adventure is closer than you think.</p>
           </div>
-          <a className="primary-button" href="#plan"><span aria-hidden="true">＋</span> Plan a new trip</a>
+          <a className="primary-button" href="/create-trip"><span aria-hidden="true">＋</span> Plan a new trip</a>
         </section>
 
         <section className="hero-banner" aria-label="Travel inspiration">
